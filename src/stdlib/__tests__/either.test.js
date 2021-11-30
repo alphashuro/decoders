@@ -13,32 +13,21 @@ import { object } from '../object';
 import { partition } from 'itertools';
 import { regex, string } from '../string';
 
-function fastcheck(sifter, goodFn, badFn) {
+function fuzz(testFn) {
     return fc.assert(
         fc.property(
-            fc.oneof(
-                fc.jsonValue(),
-                fc.unicodeJsonValue(),
-                fc.anything({
-                    withBigInt: true,
-                    withBoxedValues: true,
-                    withDate: true,
-                    withMap: true,
-                    withNullPrototype: true,
-                    withObjectString: true,
-                    withSet: true,
-                    withTypedArray: true,
-                    withSparseArray: true,
-                }),
-            ),
-            (blob) => {
-                const isGood = sifter(blob);
-                if (isGood) {
-                    goodFn(blob);
-                } else {
-                    badFn(blob);
-                }
-            },
+            fc.anything({
+                withBigInt: true,
+                withBoxedValues: true,
+                withDate: true,
+                withMap: true,
+                withNullPrototype: true,
+                withObjectString: true,
+                withSet: true,
+                withTypedArray: true,
+                withSparseArray: true,
+            }),
+            testFn,
         ),
     );
 }
@@ -104,6 +93,13 @@ Either:
 - Value at key "bar": Must be number`,
         );
     });
+
+    test('fuzz', () =>
+        fuzz((blob) => {
+            const ok = typeof blob === 'string' || typeof blob === 'boolean';
+            const expected = ok ? 'ok' : 'err';
+            expect(either(string, boolean)(blob).type).toBe(expected);
+        }));
 });
 
 describe('nested eithers', () => {
@@ -168,6 +164,12 @@ describe('either9', () => {
             expect(Result.isErr(decoder(value))).toBe(true);
         }
     });
+
+    test('fuzz', () =>
+        fuzz((blob) => {
+            const expected = okay.includes(blob) ? 'ok' : 'err';
+            expect(decoder(blob).type).toBe(expected);
+        }));
 });
 
 describe('oneOf', () => {
@@ -189,10 +191,9 @@ describe('oneOf', () => {
         }
     });
 
-    test('test with fastcheck', () =>
-        fastcheck(
-            (blob) => okay.some((okval) => okval === blob),
-            (good) => expect(decoder(good).type).toBe('ok'),
-            (bad) => expect(decoder(bad).type).toBe('err'),
-        ));
+    test('fuzz', () =>
+        fuzz((blob) => {
+            const expected = okay.includes(blob) ? 'ok' : 'err';
+            expect(decoder(blob).type).toBe(expected);
+        }));
 });
