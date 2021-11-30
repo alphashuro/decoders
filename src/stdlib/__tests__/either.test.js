@@ -1,6 +1,7 @@
 // @flow strict
 /* eslint-disable no-restricted-syntax */
 
+import * as fc from 'fast-check';
 import * as Result from '../../result';
 import { boolean } from '../boolean';
 import { constant, undefined_ } from '../constants';
@@ -11,6 +12,36 @@ import { number } from '../number';
 import { object } from '../object';
 import { partition } from 'itertools';
 import { regex, string } from '../string';
+
+function fastcheck(sifter, goodFn, badFn) {
+    return fc.assert(
+        fc.property(
+            fc.oneof(
+                fc.jsonValue(),
+                fc.unicodeJsonValue(),
+                fc.anything({
+                    withBigInt: true,
+                    withBoxedValues: true,
+                    withDate: true,
+                    withMap: true,
+                    withNullPrototype: true,
+                    withObjectString: true,
+                    withSet: true,
+                    withTypedArray: true,
+                    withSparseArray: true,
+                }),
+            ),
+            (blob) => {
+                const isGood = sifter(blob);
+                if (isGood) {
+                    goodFn(blob);
+                } else {
+                    badFn(blob);
+                }
+            },
+        ),
+    );
+}
 
 describe('either', () => {
     const stringOrBooleanDecoder = guard(either(string, boolean));
@@ -157,4 +188,11 @@ describe('oneOf', () => {
             expect(Result.isErr(decoder(value))).toBe(true);
         }
     });
+
+    test('test with fastcheck', () =>
+        fastcheck(
+            (blob) => okay.some((okval) => okval === blob),
+            (good) => expect(decoder(good).type).toBe('ok'),
+            (bad) => expect(decoder(bad).type).toBe('err'),
+        ));
 });
