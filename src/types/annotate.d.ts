@@ -2,12 +2,14 @@ export interface ObjectAnnotation {
     type: 'object';
     fields: { [key: string]: Annotation };
     text?: string;
+    subcount: number;
 }
 
 export interface ArrayAnnotation {
     type: 'array';
     items: readonly Annotation[];
     text?: string;
+    subcount: number;
 }
 
 export interface ScalarAnnotation {

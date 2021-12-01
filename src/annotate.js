@@ -8,12 +8,14 @@ export type ObjectAnnotation = {|
     +type: 'object',
     +fields: { +[key: string]: Annotation },
     +text?: string,
+    +subcount: number, // The number of nested annotations in the values
 |};
 
 export type ArrayAnnotation = {|
     +type: 'array',
     +items: $ReadOnlyArray<Annotation>,
     +text?: string,
+    +subcount: number, // The number of nested annotations in items
 |};
 
 export type ScalarAnnotation = {|
@@ -51,11 +53,48 @@ function brand<A: Annotation>(ann: A): A {
     return ann;
 }
 
+/**
+ * Compute the number of annotations in an annotation tree. This number
+ * can be used for efficient/compact rendering of error messages.
+ *
+ * For example, when formatting an error message for a long array of
+ * inputs, it can be good to count how many already have been formatted,
+ * to efficiently be able to truncate items that don't have error
+ * messages, like:
+ *
+ *   [
+ *     ⠇
+ *     {
+ *       "id": 42,
+ *             ^^ Must be string
+ *       ...
+ *     },
+ *     ...,
+ *     {},
+ *     ^^ Missing keys: "id"
+ *     ...
+ *   ]
+ *
+ */
+function count(ann: Annotation): number {
+    const self = ann.text !== undefined ? 1 : 0;
+    const nested = ann.type === 'object' || ann.type === 'array' ? ann.subcount : 0;
+    return self + nested;
+}
+
 export function object(
     fields: { +[key: string]: Annotation },
     text?: string,
 ): ObjectAnnotation {
-    return brand({ type: 'object', fields, text });
+    return brand({
+        type: 'object',
+        fields,
+        text,
+        subcount: Object.keys(fields).reduce(
+            (total, field) => total + count(fields[field]),
+            0,
+        ),
+    });
 }
 
 export function array(items: $ReadOnlyArray<Annotation>, text?: string): ArrayAnnotation {
@@ -63,6 +102,7 @@ export function array(items: $ReadOnlyArray<Annotation>, text?: string): ArrayAn
         type: 'array',
         items,
         text,
+        subcount: items.reduce((total, item) => total + count(item), 0),
     });
 }
 
