@@ -1,11 +1,20 @@
 // @flow strict
 
 import { andThen } from '../result';
+import { err, orElse } from '../result';
 import { object } from './object';
 import { oneOf } from './either';
 import { prep } from './composition';
 import type { _Any } from '../_utils';
 import type { Decoder, DecoderType } from '../_types';
+
+function or<T1, T2>(d1: Decoder<T1> | Decoder<T2>): Decoder<T1 | T2> {
+    return (blob: mixed) => orElse(d1(blob), (err1) => err(err1));
+}
+
+export function dispatch<T, V>(decoder: Decoder<T>, next: (T) => Decoder<V>): Decoder<V> {
+    return (blob: mixed) => andThen(decoder(blob), (base) => or(next(base))(blob));
+}
 
 /**
  * Dispatches to one of several given decoders, based on the value found at
@@ -46,14 +55,9 @@ export function disjointUnion<O: { +[field: string]: Decoder<_Any>, ... }>(
     field: string,
     mapping: O,
 ): Decoder<$Values<$ObjMap<O, DecoderType>>> {
-    const base = object({
-        [field]: prep(String, oneOf(Object.keys(mapping))),
+    const base = object({ [field]: prep(String, oneOf(Object.keys(mapping))) });
+    return dispatch(base, (baseObj) => {
+        const decoderName = baseObj[field];
+        return mapping[decoderName];
     });
-    return (blob: mixed) => {
-        return andThen(base(blob), (baseObj) => {
-            const decoderName = baseObj[field];
-            const decoder = mapping[decoderName];
-            return decoder(blob);
-        });
-    };
 }

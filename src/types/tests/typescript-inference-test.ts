@@ -8,6 +8,7 @@ import {
     describe,
     dict,
     disjointUnion,
+    dispatch,
     either,
     // either3,
     // either4,
@@ -260,6 +261,11 @@ const circle: Decoder<Circle> = object({
 
 // $ExpectType Decoder<Values<{ rect: Rect; circle: Circle; }>, unknown>
 disjointUnion('_type', { rect, circle });
+
+// $ExpectType Decoder<Rect | Circle>, unknown>
+dispatch(object({ _type: oneOf(['rect', 'circle']) }), (base) =>
+    base._type === 'rect' ? rect : circle,
+);
 
 interface Rect1 {
     _type: 0;

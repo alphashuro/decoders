@@ -19,7 +19,7 @@ export { boolean, numericBoolean, truthy } from './core/boolean';
 export { constant, hardcoded, mixed, null_, undefined_, unknown } from './core/constants';
 export { date, iso8601 } from './core/date';
 export { describe } from './core/describe';
-export { disjointUnion } from './core/dispatch';
+export { disjointUnion, dispatch } from './core/dispatch';
 export { either, oneOf } from './core/either';
 export { fail } from './core/fail';
 export { instanceOf } from './core/instanceOf';
