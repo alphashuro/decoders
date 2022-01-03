@@ -4,6 +4,7 @@ import { annotate } from '../annotate';
 import { either } from './either';
 import { err, ok } from '../result';
 import { null_, undefined_ } from './constants';
+import { transform } from './composition';
 import type { Decoder } from '../_types';
 
 /**
@@ -38,4 +39,11 @@ const undefined_or_null: Decoder<null | void> = (blob: mixed) =>
  */
 export function maybe<T>(decoder: Decoder<T>): Decoder<?T> {
     return either(undefined_or_null, decoder);
+}
+
+export function coalesce<T, V>(
+    decoder: Decoder<T>,
+    fallbackValue: V,
+): Decoder<$NonMaybeType<T> | V> {
+    return transform(decoder, (value) => value ?? fallbackValue);
 }

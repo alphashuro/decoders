@@ -36,6 +36,7 @@ export { compose, predicate, prep, transform } from './core/composition';
 
 export { array, nonEmptyArray, poja, set } from './core/array';
 export { boolean, numericBoolean, truthy } from './core/boolean';
+export { coalesce, maybe, nullable, optional } from './core/optional';
 export { constant, hardcoded, mixed, null_, undefined_, unknown } from './core/constants';
 export { date, iso8601 } from './core/date';
 export { describe } from './core/describe';
@@ -57,6 +58,5 @@ export { instanceOf } from './core/instanceOf';
 export { integer, number, positiveInteger, positiveNumber } from './core/number';
 export { json, jsonObject, jsonArray } from './core/json';
 export { lazy } from './core/lazy';
-export { maybe, nullable, optional } from './core/optional';
 export { taggedUnion } from './core/dispatch';
 export { tuple } from './core/tuple';

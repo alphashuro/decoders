@@ -1,6 +1,7 @@
 import {
     array,
     boolean,
+    coalesce,
     compose,
     constant,
     date,
@@ -151,6 +152,11 @@ nullable(nullable(string)); // $ExpectType Decoder<string | null, unknown>
 
 maybe(string); // $ExpectType Decoder<string | null | undefined, unknown>
 maybe(maybe(string)); // $ExpectType Decoder<string | null | undefined, unknown>
+
+coalesce(string, null); // $ExpectType Decoder<string | null, unknown>
+coalesce(string, undefined); // $ExpectType Decoder<string | undefined, unknown>
+coalesce(string, 'hi'); // $ExpectType Decoder<string, unknown>
+coalesce(string, 42); // $ExpectType Decoder<string | number, unknown>
 
 // $ExpectType Decoder<{ bar: { qux: string; }; foo?: string | undefined; }, unknown>
 object({
