@@ -2,6 +2,7 @@
 
 import { annotate } from '../annotate';
 import { err, ok } from '../result';
+import { transform } from './composition';
 import type { Decoder, Scalar } from '../_types';
 
 /**
@@ -31,6 +32,10 @@ export function constant<T: Scalar>(value: T): Decoder<T> {
  */
 export function hardcoded<T>(value: T): Decoder<T> {
     return () => ok(value);
+}
+
+export function override<X, T>(decoder: Decoder<X>, overrideValue: T): Decoder<T> {
+    return transform(decoder, () => overrideValue);
 }
 
 /**

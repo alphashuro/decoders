@@ -1,9 +1,10 @@
 // @flow strict
 /* eslint-disable no-restricted-syntax */
 
-import { constant, hardcoded, mixed, null_, undefined_ } from '../constants';
+import { constant, hardcoded, mixed, null_, override, undefined_ } from '../constants';
 import { INPUTS } from './fixtures';
 import { partition } from 'itertools';
+import { string } from '../string';
 import { unwrap } from '../../result';
 
 describe('null', () => {
@@ -140,6 +141,25 @@ describe('hardcoded value', () => {
 
     it('invalid', () => {
         // hardcoded verifiers never fail
+    });
+});
+
+describe('override', () => {
+    const decoder = override(string, 'hello');
+    const [okay, not_okay] = partition(INPUTS, (x) => typeof x === 'string');
+
+    it('accepts', () => {
+        expect(okay.length).not.toBe(0);
+        for (const input of okay) {
+            expect(decoder(input).value).toBe('hello');
+        }
+    });
+
+    it('rejects', () => {
+        expect(not_okay.length).not.toBe(0);
+        for (const value of not_okay) {
+            expect(decoder(value).ok).toBe(false);
+        }
     });
 });
 

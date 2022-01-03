@@ -28,6 +28,7 @@ New features:
 -   Include ES modules in published NPM builds (yay tree-shaking! 🍃)
 -   Much smaller total bundle size
 -   New decoders:
+    -   [`override`](https://nvie.com/decoders/api#override)
     -   [`prep()`](https://nvie.com/decoders/api#prep)
     -   [`set()`](https://nvie.com/decoders/api#set)
     -   [`uuid`](https://nvie.com/decoders/api#uuid)

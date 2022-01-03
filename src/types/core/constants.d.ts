@@ -7,5 +7,10 @@ export const undefined_: Decoder<undefined>;
 export function constant<T extends Scalar>(value: T): Decoder<T>;
 export function hardcoded<T extends Scalar>(value: T): Decoder<T>;
 export function hardcoded<T>(value: T): Decoder<T>;
+export function override<T extends Scalar>(
+    decoder: Decoder<unknown>,
+    overrideValue: T,
+): Decoder<T>;
+export function override<T>(decoder: Decoder<unknown>, overrideValue: T): Decoder<T>;
 export const mixed: Decoder<unknown>;
 export const unknown: Decoder<unknown>;

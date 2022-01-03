@@ -678,6 +678,29 @@ verify(undefined) === 42;
 
 ---
 
+<a name="override" href="#override">#</a> <b>override</b><i>&lt;T&gt;</i>(decoder:
+<i>Decoder&lt;unknown&gt;</i>, newValue: <i>T</i>): <i>Decoder&lt;T&gt;</i>
+[(source)](https://github.com/nvie/decoders/blob/main/src/core/constants.js 'Source')
+
+Accepts anything the given decoder does, but ignores its returned value, and instead
+returns the given value. This subtly differs from [`hardcoded`](#hardcoded), which will
+accept anything. Put differently, `hardcoded(x)` is equivalent to `override(unknown, x)`.
+
+<!-- prettier-ignore-start -->
+```javascript
+const verify = guard(override(string, 42));
+
+// 👍
+verify('hello') === 42;
+
+// 👎
+verify(false);  // throws, not a string
+verify(null);   // throws, not a string
+```
+<!-- prettier-ignore-end -->
+
+---
+
 <a name="fail" href="#fail">#</a> <b>fail</b>(): <i>Decoder&lt;empty&gt;</i>
 [&lt;&gt;](https://github.com/nvie/decoders/blob/main/src/core/fail.js 'Source')
 

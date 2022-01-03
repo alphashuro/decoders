@@ -34,6 +34,7 @@ import {
     object,
     oneOf,
     optional,
+    override,
     poja,
     pojo,
     positiveInteger,
@@ -59,6 +60,8 @@ import { ok, unwrap } from 'decoders/result';
 
 constant('foo'); // $ExpectType Decoder<"foo", unknown>
 hardcoded('foo'); // $ExpectType Decoder<"foo", unknown>
+override(string, 'foo'); // $ExpectType Decoder<"foo", unknown>
+override(number, 'foo'); // $ExpectType Decoder<"foo", unknown>
 
 null_; // $ExpectType Decoder<null, unknown>
 undefined_; // $ExpectType Decoder<undefined, unknown>

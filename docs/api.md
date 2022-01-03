@@ -11,7 +11,7 @@ has_children: true
 - [**Numbers**](#numbers): [`number`](#number), [`integer`](#integer), [`positiveNumber`](#positiveNumber), [`positiveInteger`](#positiveInteger)
 - [**Booleans**](#booleans): [`boolean`](#boolean), [`truthy`](#truthy), [`numericBoolean`](#numericBoolean)
 - [**Dates**](#dates): [`date`](#date), [`iso8601`](#iso8601)
-- [**Constants**](#constants): [`constant()`](#constant), [`hardcoded()`](#hardcoded)
+- [**Constants**](#constants): [`constant()`](#constant), [`hardcoded()`](#hardcoded), [`override()`](#override)
 - [**Optionality**](#optionality): [`null_`](#null_), [`undefined_`](#undefined_), [`optional()`](#optional), [`nullable()`](#nullable), [`maybe()`](#maybe), [`unknown`](#unknown), [`mixed`](#mixed)
 - [**Arrays**](#arrays): [`array()`](#array), [`nonEmptyArray()`](#nonEmptyArray), [`poja`](#poja), [`tuple()`](#tuple), [`set()`](#set)
 - [**Objects**](#objects): [`object()`](#object), [`exact()`](#exact), [`inexact()`](#inexact), [`pojo`](#pojo), [`dict()`](#dict), [`mapping()`](#mapping)
@@ -483,6 +483,7 @@ verify(new Date());    // throws (does not accept dates)
 
 -   [`constant()`](#constant)
 -   [`hardcoded()`](#hardcoded)
+-   [`override()`](#override)
 
 ---
 
@@ -542,6 +543,28 @@ verify(undefined) === 42;
 
 // 👎
 // This decoder will never reject an input
+```
+<!-- prettier-ignore-end -->
+
+---
+
+<a name="override" href="#override">#</a> <b>override</b><i>&lt;X, T&gt;</i>(decoder:
+<i>Decoder&lt;X&gt;</i>, overrideValue: <i>T</i>): <i>Decoder&lt;T&gt;</i>
+[(source)](https://github.com/nvie/decoders/blob/main/src/core/constants.js 'Source')
+
+Accepts anything the given decoder does, but will return the provided value. This subtly
+differs from [`hardcoded`](#hardcoded), which will always accept everything.
+
+<!-- prettier-ignore-start -->
+```javascript
+const verify = guard(override(string, 42));
+
+// 👍
+verify('hello') === 42;
+
+// 👎
+verify(false);  // throws, not a string
+verify(null);   // throws, not a string
 ```
 <!-- prettier-ignore-end -->
 
