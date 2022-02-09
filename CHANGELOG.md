@@ -1,3 +1,8 @@
+## v2.1.0
+
+Internals completely rewritten in TypeScript. No observable API changes. Still works for
+both TypeScript and Flow, though.
+
 ## v2.0.0
 
 This is a breaking change, which brings numerous benefits:
